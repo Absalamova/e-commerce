@@ -1,217 +1,247 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom";
-import { products } from '../../products-data';
-import ProductSection from './../../components/ProductSection';
 import ProductCard from "./../../components/ProductCard";
-import { parsePrice } from './parsePrice';
+import { useLanguage } from '../../contexts/LanguageContext';
+import apiService from '../../services/api';
+
 const Categoryfilter = () => {
     const { id } = useParams();
-    const [visibleProducts,setProduct]=useState([])
+    const { t, currentLanguage } = useLanguage();
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     
 const [minPrice, setMinPrice] = useState(0);
 const [maxPrice, setMaxPrice] = useState(100);
-    useEffect(()=>{
-    if(id==1){
-      const promotions = products.filter(p => p.category == "Dairy");
-//const listproduct= products.filter((item)=>item.category=="Dairy")
-const filtered = promotions.filter((product) => {
-  const productPrice = parsePrice(product.price); // Преобразование цены в число
-  return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);
 
-    } else if(id==2){
-        const listproduct= products.filter((item)=>item.category=="Bakery")
+    // Category mapping based on catalog dropdown indices
+    const categoryMap = {
+        1: "Dairy",
+        2: "Bakery",
+        3: "Fruit",
+        4: "Dessert",
+        5: "Dessert",
+        6: "Lunch",
+        7: "Breakfast",
+        8: "Fruit",
+        9: "Dessert",
+        10: "Dinner",
+        11: "Lunch",
+        12: "Meat",
+        13: "Fast food"
+    };
 
+    const categoryName = categoryMap[id] || "All";
 
-const filtered = listproduct.filter((product) => {
-      const productPrice = parsePrice(product.price); // Преобразование цены в число
-      return productPrice >= minPrice && productPrice <= maxPrice;
-  });
-    setProduct(filtered);
-    }else if(id==3){
-      const listproduct= products.filter((item)=>item.category=="Fruit")
+    useEffect(() => {
+        fetchProducts();
+    }, [id]);
 
+    useEffect(() => {
+        filterProducts();
+    }, [products, minPrice, maxPrice]);
 
-const filtered = listproduct.filter((product) => {
-    const productPrice = parsePrice(product.price); // Преобразование цены в число
-    return productPrice >= minPrice && productPrice <= maxPrice;
-});
-  setProduct(filtered);
-  }else if(id==4){
-    const listproduct= products.filter((item)=>item.category=="Dessert")
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
 
+            // API service now handles fallback automatically
+            let response;
+            if (id && categoryMap[id]) {
+                // Fetch products by category
+                response = await apiService.fetchProducts({
+                    category: categoryMap[id],
+                    limit: 50
+                });
+            } else {
+                // Fetch all products
+                response = await apiService.fetchProducts({ limit: 50 });
+            }
 
-const filtered = listproduct.filter((product) => {
-  const productPrice = parsePrice(product.price); // Преобразование цены в число
-  return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);
-}else if(id==5){
-  const listproduct= products.filter((item)=>item.category=="Dessert")
+            setProducts(response.products || []);
+        } catch (err) {
+            console.error('Error fetching products:', err);
+            setError('Failed to load products. Please try again.');
+            // Fallback to local data
+            try {
+                const localData = apiService.getLocalProducts();
+                const filtered = id && categoryMap[id]
+                    ? localData.products.filter(p => p.category === categoryMap[id])
+                    : localData.products;
+                setProducts(filtered);
+            } catch (localErr) {
+                console.error('Error loading local products:', localErr);
+                setProducts([]);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==6){
-  const listproduct= products.filter((item)=>item.category=="Lunch")
-
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-
-else if(id==7){
-  const listproduct= products.filter((item)=>item.category=="Breakfast")
-
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==8){
-  const listproduct= products.filter((item)=>item.category=="Fruit")
-
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==9){
-  const listproduct= products.filter((item)=>item.category=="Dessert")
+    const filterProducts = () => {
+        const filtered = products.filter(product => {
+            return product.price >= minPrice && product.price <= maxPrice;
+        });
+        setFilteredProducts(filtered);
+    };
 
 
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==10){
-  const listproduct= products.filter((item)=>item.category=="Dinner")
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            <span className="ml-3 text-orange-500 font-medium">{t('loading')}...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==11){
-  const listproduct= products.filter((item)=>item.category=="Lunch")
-
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==12){
-  const listproduct= products.filter((item)=>item.category=="Meat")
-
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-else if(id==13){
-  const listproduct= products.filter((item)=>item.category=="Fast food")
-
-
-const filtered = listproduct.filter((product) => {
-const productPrice = parsePrice(product.price); // Преобразование цены в число
-return productPrice >= minPrice && productPrice <= maxPrice;
-});
-setProduct(filtered);}
-},[minPrice, maxPrice,visibleProducts, setProduct])
-
-
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-20">
+            <div className="text-red-500 text-lg font-medium mb-4">{error}</div>
+            <button
+              onClick={fetchProducts}
+              className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition"
+            >
+              {t('retry')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-    <div className="bg-[#FFF3E9] py-6">
-    <div className='container mx-auto'>
-        <div className='flex '>
-            <aside className='w-[300px]'><div>
-                <div><p>Фильтр</p></div>
-                <div className="p-4">
-      <div className="flex flex-col gap-4">
-        {/* Ползунок для минимальной цены */}
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 py-12">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            {categoryName} Products
+          </h1>
+          <p className="text-lg text-gray-600">
+            {filteredProducts.length} products found
+          </p>
+        </div>
+
+        <div className="flex gap-8">
+          {/* Sidebar Filters */}
+          <aside className="w-80 flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 sticky top-24">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">⚙️</span>
+                </div>
+                Filters
+              </h3>
+
+              {/* Price Range */}
+              <div className="space-y-6">
         <div>
-          <label htmlFor="minPrice" className="block text-sm font-medium text-gray-700">
-            Минимальная цена: {minPrice} ₽
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Price Range: ${minPrice} - ${maxPrice}
+                  </label>
+
+                  {/* Min Price */}
+                  <div className="mb-4">
+                    <label className="block text-xs text-gray-600 mb-2">
+                      Minimum Price: ${minPrice}
           </label>
           <input
             type="range"
-            id="minPrice"
             min="0"
             max="100"
             value={minPrice}
             onChange={(e) => setMinPrice(parseInt(e.target.value))}
-            className="w-full"
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           />
         </div>
 
-        {/* Ползунок для максимальной цены */}
+                  {/* Max Price */}
         <div>
-          <label htmlFor="maxPrice" className="block text-sm font-medium text-gray-700">
-            Максимальная цена: {maxPrice} ₽
+                    <label className="block text-xs text-gray-600 mb-2">
+                      Maximum Price: ${maxPrice}
           </label>
           <input
             type="range"
-            id="maxPrice"
             min="0"
             max="100"
             value={maxPrice}
             onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-            className="w-full"
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           />
         </div>
 
-        {/* Отображение выбранного диапазона цен */}
-        <div className="flex justify-between text-sm text-gray-600">
-          <span>0 ₽</span>
-          <span>100 ₽</span>
+                  {/* Price Scale */}
+                  <div className="flex justify-between text-xs text-gray-500 mt-2">
+                    <span>$0</span>
+                    <span>$100</span>
+                  </div>
+                </div>
+
+                {/* Active Filters */}
+                <div className="border-t pt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Active Filters:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      Price: ${minPrice} - ${maxPrice}
+                    </span>
+                  </div>
         </div>
       </div>
     </div>
-                </div></aside>
-    {/*<div className='grid grid-cols-3'>
-    {product.map((item)=>(
-        <div className='h-[350px] border-2 border-amber-600' key={item.id}>
-<div className=''><img className='mx-auto' src={item.images[0]} alt={item.name} /></div>
-<div className='flex justify-between items-center'><p>{item.price}</p><p>{item.disprice}</p></div>
-<div className='flex justify-between items-center'><p>С картой</p><p>Обычная</p></div>
-<p>{item.description}</p>
+          </aside>
 
-<button>В корзину</button>
+          {/* Products Grid */}
+          <main className="flex-1">
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="text-gray-400 text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-600">Try adjusting your filters</p>
         </div>
-    ))
-    }</div>*/}
- <div>
-    
-      <div className="bg-[#FFF3E9] py-6">
-      
-      <div className="max-w-5/2 mx-auto px-4 sm:px-6 md:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {visibleProducts.map((product) => (
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
-                </div>
-      </div>
+              </div>
+            )}
+          </main>
     </div>
     </div>
 
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #f97316;
+          cursor: pointer;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .slider::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #f97316;
+          cursor: pointer;
+          border: 2px solid #fff;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+      `}</style>
     </div>
-    </div>
-    </div>
-    </>
   )
 }
 

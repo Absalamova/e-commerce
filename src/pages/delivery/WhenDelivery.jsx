@@ -1,35 +1,50 @@
 import React, { useState } from 'react'
-
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const WhenDelivery = ({register}) => {
+  const { t } = useLanguage()
   const [selectedTime, setSelectedTime] = useState(null)
   const timeOptions = ["8 - 10", "10 - 12", "12 - 14", "14 - 16", "16 - 18", "18 - 20"]
 
   return (
-    <section className=''>
-      <h2 className='text-2xl font-bold pb-6'>Qachon</h2>
-      <div className='flex justify-between flex-wrap gap-4'>
-        <span className='flex flex-col'>
-          <p className='mb-1'>Sana:</p>
-          <input type="date" className='border bg-white p-1 rounded-md' {...register("date")} />
-        </span>
-        <span>
-          <h3 className='mb-2'>Vaqtini tanlang:</h3>
-          <div className='flex flex-wrap w-[250px] gap-2'>
+    <div className='bg-gray-50 rounded-xl p-6 border border-gray-200'>
+      <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3'>
+        <div className='w-8 h-8 bg-green-500 rounded-full flex items-center justify-center'>
+          <span className='text-white font-bold'>🕐</span>
+        </div>
+        {t('when')}
+      </h2>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+        <div className='space-y-3'>
+          <label className='text-gray-700 font-medium block'>{t('date')}:</label>
+          <input
+            type="date"
+            className='w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-white'
+            {...register("date")}
+          />
+        </div>
+        <div className='space-y-3'>
+          <h3 className='text-gray-700 font-medium'>{t('selectTime')}:</h3>
+          <div className='grid grid-cols-2 gap-3'>
             {timeOptions.map((time) => (
-              <p
-              {...register("times", {required:"vaqtni tanlang"})}
+              <button
+                type="button"
+                {...register("times", {required: t('selectTime')})}
                 key={time}
                 onClick={() => setSelectedTime(time)}
-                className={`py-1.5 px-3 rounded-md border cursor-pointer text-gray-800 
-                  ${selectedTime === time ? 'bg-green-500 text-white' : 'bg-[#fffcf9] border-gray-500 hover:bg-green-300'}`}>{time}
-              </p>
+                className={`py-3 px-4 rounded-lg border-2 cursor-pointer font-medium transition-all transform hover:scale-105 ${
+                  selectedTime === time
+                    ? 'bg-green-500 text-white border-green-500 shadow-lg'
+                    : 'bg-white border-gray-300 text-gray-800 hover:bg-green-50 hover:border-green-300'
+                }`}
+              >
+                {time}
+              </button>
             ))}
           </div>
-        </span>
+        </div>
       </div>
-
-    </section>
+    </div>
   )
 }
 

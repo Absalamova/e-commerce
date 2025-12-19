@@ -1,14 +1,25 @@
 import React from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const WhereDelivery = ({register}) => {
+  const { t } = useLanguage()
+
   return (
-    <section>
-        <h2 className='text-2xl font-bold pb-6 ml-2'>Qayerdan</h2>
-        <div className='flex flex-wrap gap-8 justify-around items-center'>
-           <span>
-               <label className='text-gray-700 block mb-1'>Topshiriladigan hudud:</label>
-               <select {...register("district")} className='border rounded-md w-[200px] py-1 outline-none cursor-pointer'>
-                <option>Hudud tanlang</option>
+    <div className='bg-gray-50 rounded-xl p-6 border border-gray-200'>
+        <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3'>
+          <div className='w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center'>
+            <span className='text-white font-bold'>📍</span>
+          </div>
+          {t('where')}
+        </h2>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+           <div className='space-y-2'>
+               <label className='text-gray-700 font-medium block'>{t('district')}:</label>
+               <select
+                 {...register("district")}
+                 className='w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white'
+               >
+                <option>{t('selectDistrict')}</option>
                 <option value="Yunusobod">Yunusobod</option>
                 <option value="Sergeli">Sergeli</option>
                 <option value="Chilonzor">Chilonzor</option>
@@ -17,26 +28,45 @@ const WhereDelivery = ({register}) => {
                 <option value="Shayxontohur">Shayxontohur</option>
                 <option value="Mirobod">Mirobod</option>
                </select>
-           </span>
-            <span>
-              <label className='text-gray-700 block my-1'>Ko'cha:</label>
-              <input className='border-2 border-gray-600 outline-none rounded-md py-1 px-2 focus:bg-blue-50 focus:border-gray-500' type="text" placeholder="Ko'chani kiriting" {...register("street", {required:"Ko'chani kiriting"})} />
-            </span>
-            <span>
-              <label className='text-gray-700 block my-1'>Uy:</label>
-              <input className='border-2 border-gray-600 outline-none rounded-md py-1 px-2 focus:bg-blue-50 focus:border-gray-500 w-[60px]' type="number" placeholder='Uy' {...register("home", {required:"Uyni kiriting", minLength:{value:1}, maxLength:{value:4}})}/>
-            </span>
-            <span>
-              <label className='text-gray-700 block my-1'>Kvartira:</label>
-              <input className='border-2 border-gray-600 outline-none rounded-md py-1 px-2 focus:bg-blue-50 focus:border-gray-500 w-[100px]' type="number" placeholder='Kvartira' {...register("apartment", {required:"Enter apartment"})} />
-            </span>
-            <span>
-              <label className='text-gray-700 block my-1'>Qo'shimcha:</label>
-              <input className='border-2 border-gray-600 outline-none rounded-md py-1 px-2 focus:bg-blue-50 focus:border-gray-500' type="text" placeholder="Qo'shimcha" {...register("additional")}/>
-            </span>
-
+           </div>
+            <div className='space-y-2'>
+              <label className='text-gray-700 font-medium block'>{t('street')}:</label>
+              <input
+                className='w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all'
+                type="text"
+                placeholder={t('enterStreet')}
+                {...register("street", {required: t('enterStreet')})}
+              />
+            </div>
+            <div className='space-y-2'>
+              <label className='text-gray-700 font-medium block'>{t('house')}:</label>
+              <input
+                className='w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all'
+                type="number"
+                placeholder={t('house')}
+                {...register("home", {required: t('house'), minLength:{value:1}, maxLength:{value:4}})}
+              />
+            </div>
+            <div className='space-y-2'>
+              <label className='text-gray-700 font-medium block'>{t('apartment')}:</label>
+              <input
+                className='w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all'
+                type="number"
+                placeholder={t('apartment')}
+                {...register("apartment", {required: t('apartment')})}
+              />
+            </div>
+            <div className='space-y-2 md:col-span-2'>
+              <label className='text-gray-700 font-medium block'>{t('additional')}:</label>
+              <input
+                className='w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all'
+                type="text"
+                placeholder={t('additional')}
+                {...register("additional")}
+              />
+            </div>
         </div>
-    </section>
+    </div>
   )
 }
 

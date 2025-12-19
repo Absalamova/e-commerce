@@ -1,44 +1,66 @@
 import React, { useState } from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const SumDelivery = ({ handleSubmit, sendMessage }) => {
+  const { t } = useLanguage()
   const [isOn, setIsOn] = useState(false)
 
   return (
-    <section className='w-[300px]'>
-      <div className='flex items-center gap-4 py-8'>
-        <div
+    <div className='bg-white rounded-xl p-6 border border-gray-200 shadow-lg sticky top-4'>
+      <h3 className='text-2xl font-bold text-gray-900 mb-6 text-center'>Order Summary</h3>
+
+      {/* Discount Toggle */}
+      <div className='flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg mb-6 border border-orange-200'>
+        <span className='text-lg font-medium text-gray-800'>200$ {t('discount')}</span>
+        <button
+          type="button"
           onClick={() => setIsOn(!isOn)}
-          className={`w-14 h-8 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer ${isOn ? 'bg-green-500' : ''}`}
+          className={`w-14 h-8 flex items-center rounded-full p-1 transition-all duration-300 ${
+            isOn ? 'bg-green-500' : 'bg-gray-300'
+          }`}
         >
-          <div className={`bg-white w-6 h-6 rounded-full shadow-md transform ${isOn ? 'translate-x-6' : ''}`} />
+          <div className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ${
+            isOn ? 'translate-x-6' : ''
+          }`} />
+        </button>
+      </div>
+
+      {/* Order Details */}
+      <div className='space-y-4 mb-8'>
+        <div className='flex justify-between items-center py-3 border-b border-gray-200'>
+          <span className='text-gray-600'>3 {t('products')}</span>
+          <span className='font-semibold text-gray-900'>258$</span>
         </div>
-        <p className='text-[#414141] text-xl'>200$ Chegirma</p>
+        <div className='flex justify-between items-center py-3 border-b border-gray-200'>
+          <span className='text-gray-600'>{t('discount')}</span>
+          <span className='font-semibold text-red-600'>-8$</span>
+        </div>
+        <div className='flex justify-between items-center py-3 border-b-2 border-gray-300'>
+          <span className='text-xl font-bold text-gray-900'>{t('total')}</span>
+          <span className='text-2xl font-bold text-gray-900'>250$</span>
+        </div>
       </div>
 
-      <div className='py-4 space-y-2'>
-        <span className='flex justify-between gap-4'>
-          <p className='text-xl text-[#8F8F8F]'>3 ta mahsulot</p>
-          <p className='text-xl text-[#414141] font-bold'>258$</p>
-        </span>
-        <span className='flex justify-between gap-4'>
-          <p className='text-xl text-[#8F8F8F]'>Chegirma</p>
-          <p className='text-xl text-[#FF6633] font-bold'>-8$</p>
-        </span>
-      </div>
-
-      <div className='flex justify-between items-center gap-4 py-8'>
-        <h2 className='text-2xl text-[#2f2d2d]'>Umumiy Summa</h2>
-        <p className='text-2xl font-bold text-[#414141]'>250$</p>
-      </div>
-
+      {/* Submit Button */}
       <button
         type='submit'
         onClick={handleSubmit(sendMessage)}
-        className='w-full border p-3 bg-green-500 text-white rounded-lg font-semibold cursor-pointer hover:bg-green-400 active:scale-96 duration-250'
+        className='w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'
       >
-        Yetkazib bergandan keyin to'lov
+        <span className='flex items-center justify-center gap-2'>
+          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+          </svg>
+          {t('payAfterDelivery')}
+        </span>
       </button>
-    </section>
+
+      <div className='mt-4 text-center'>
+        <p className='text-sm text-gray-500'>
+          Secure payment • Fast delivery
+        </p>
+      </div>
+    </div>
   )
 }
 

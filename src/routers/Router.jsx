@@ -6,6 +6,8 @@ import Delivery from "../pages/delivery/Delivery";
 import Favorites from "./../pages/favorites/Favorites";
 import Home from "../pages/home/Home";
 import Categoryfilter from "../pages/category/Categoryfilter";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
 
 import ProductListPage from "../pages/product/ProductList";
 import SinglePage from "../pages/singlepage/SinglePage";
@@ -52,6 +54,14 @@ export const Router = createBrowserRouter([
       {
         path: "/products/:tag",
         element: <ProductListPage />
+      },
+      {
+        path: "/login",
+        element: <Login />
+      },
+      {
+        path: "/register",
+        element: <Register />
       }
 
     ],
